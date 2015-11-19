@@ -8,22 +8,24 @@
 
 /* Begin PBXBuildFile section */
 		6C89F6EA1BFE05FD00AC2477 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6C89F6E91BFE05FD00AC2477 /* AppDelegate.swift */; };
-		6C89F6EC1BFE05FD00AC2477 /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6C89F6EB1BFE05FD00AC2477 /* ViewController.swift */; };
+		6C89F6EC1BFE05FD00AC2477 /* MapViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6C89F6EB1BFE05FD00AC2477 /* MapViewController.swift */; };
 		6C89F6EF1BFE05FD00AC2477 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 6C89F6ED1BFE05FD00AC2477 /* Main.storyboard */; };
 		6C89F6F21BFE05FD00AC2477 /* VirtualTourist.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = 6C89F6F01BFE05FD00AC2477 /* VirtualTourist.xcdatamodeld */; };
 		6C89F6F41BFE05FD00AC2477 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 6C89F6F31BFE05FD00AC2477 /* Assets.xcassets */; };
 		6C89F6F71BFE05FD00AC2477 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 6C89F6F51BFE05FD00AC2477 /* LaunchScreen.storyboard */; };
+		6C89F6FF1BFE070A00AC2477 /* CoreDataStackManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6C89F6FE1BFE070A00AC2477 /* CoreDataStackManager.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
 		6C89F6E61BFE05FD00AC2477 /* VirtualTourist.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = VirtualTourist.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		6C89F6E91BFE05FD00AC2477 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
-		6C89F6EB1BFE05FD00AC2477 /* ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
+		6C89F6EB1BFE05FD00AC2477 /* MapViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MapViewController.swift; sourceTree = "<group>"; };
 		6C89F6EE1BFE05FD00AC2477 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
 		6C89F6F11BFE05FD00AC2477 /* VirtualTourist.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = VirtualTourist.xcdatamodel; sourceTree = "<group>"; };
 		6C89F6F31BFE05FD00AC2477 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		6C89F6F61BFE05FD00AC2477 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		6C89F6F81BFE05FD00AC2477 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		6C89F6FE1BFE070A00AC2477 /* CoreDataStackManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CoreDataStackManager.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -57,8 +59,9 @@
 			isa = PBXGroup;
 			children = (
 				6C89F6E91BFE05FD00AC2477 /* AppDelegate.swift */,
-				6C89F6EB1BFE05FD00AC2477 /* ViewController.swift */,
+				6C89F6FE1BFE070A00AC2477 /* CoreDataStackManager.swift */,
 				6C89F6ED1BFE05FD00AC2477 /* Main.storyboard */,
+				6C89F6EB1BFE05FD00AC2477 /* MapViewController.swift */,
 				6C89F6F31BFE05FD00AC2477 /* Assets.xcassets */,
 				6C89F6F51BFE05FD00AC2477 /* LaunchScreen.storyboard */,
 				6C89F6F81BFE05FD00AC2477 /* Info.plist */,
@@ -138,7 +141,8 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				6C89F6EC1BFE05FD00AC2477 /* ViewController.swift in Sources */,
+				6C89F6EC1BFE05FD00AC2477 /* MapViewController.swift in Sources */,
+				6C89F6FF1BFE070A00AC2477 /* CoreDataStackManager.swift in Sources */,
 				6C89F6EA1BFE05FD00AC2477 /* AppDelegate.swift in Sources */,
 				6C89F6F21BFE05FD00AC2477 /* VirtualTourist.xcdatamodeld in Sources */,
 			);
