@@ -7,6 +7,7 @@
 //
 //  This file was adapted from the MemoryMap app (ViewController.swift).
 
+import CoreData
 import MapKit
 import UIKit
 
@@ -22,9 +23,36 @@ class MapViewController: UIViewController, MKMapViewDelegate {
     override func viewDidLoad() {
         super.viewDidLoad()
         restoreMapRegion(false)
+        // restoreSavedPins()
+        
+        do {
+            try fetchedResultsController.performFetch()
+        } catch {}
+        
+        if let pins = fetchedResultsController.fetchedObjects as? [Pin] {
+//        let pins = fetchAll()
+            for pin in pins {
+                let annotation = MKPointAnnotation()
+                annotation.coordinate = pin.coordinate()
+                mapView.addAnnotation(annotation)
+            }
+        }
         
         let lpgr = UILongPressGestureRecognizer(target: self, action: "handleLongPress:")
         mapView.addGestureRecognizer(lpgr)
+    }
+    
+    func fetchAll() -> [Pin] {
+        // Create the fetch request
+        let fetchRequest = NSFetchRequest(entityName: "Pin")
+        
+        // Execute the Fetch Request
+        do {
+            return try sharedContext.executeFetchRequest(fetchRequest) as! [Pin]
+        } catch let error as NSError {
+            print("Error in fetchAll(): \(error)")
+            return [Pin]()
+        }
     }
     
     func handleLongPress(sender: UILongPressGestureRecognizer) {
@@ -40,6 +68,13 @@ class MapViewController: UIViewController, MKMapViewDelegate {
             case .Changed:
                 pinInFocus.coordinate = positionOnMap
             case .Ended:
+                // Creates a pin object and persists it using CoreData.
+                let pin = [
+                    Pin.Keys.Latitude: positionOnMap.latitude,
+                    Pin.Keys.Longitude: positionOnMap.longitude
+                ]
+                let _ = Pin(dictionary: pin, context: sharedContext)
+                CoreDataStackManager.sharedInstance().saveContext()
                 pinInFocus = nil
             default:
                 if pinInFocus != nil {
@@ -50,6 +85,24 @@ class MapViewController: UIViewController, MKMapViewDelegate {
         
     }
     
+    // Helper: Core Data
+    
+    lazy var sharedContext: NSManagedObjectContext = {
+        return CoreDataStackManager.sharedInstance().managedObjectContext
+    }()
+    
+    lazy var fetchedResultsController: NSFetchedResultsController = {
+        let fetchRequest = NSFetchRequest(entityName: "Pin")
+        
+        fetchRequest.sortDescriptors = []
+        
+        let fetchedResultsController = NSFetchedResultsController(
+            fetchRequest: fetchRequest, managedObjectContext: self.sharedContext,
+            sectionNameKeyPath: nil, cacheName: nil)
+        
+        return fetchedResultsController
+    } ()
+
     // Helper: Save region and zoom level.
     
     // Here we use the same filePath strategy as the Persistent Master Detail
