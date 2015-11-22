@@ -21,17 +21,23 @@ class MapViewController: UIViewController, MKMapViewDelegate {
     var pinInFocus: Pin!
     var savedMapRegion: MapRegion!
     
+    // UIViewController
+    
+    override func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject?) {
+        if let vc = segue.destinationViewController as? PhotoAlbumViewController {
+            vc.pin = self.mapView.selectedAnnotations[0] as! Pin
+        }
+    }
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         restoreMapRegion(false)
-        // restoreSavedPins()
         
         do {
             try fetchedResultsController.performFetch()
         } catch let error as NSError {
             self.showAlert("", message: "Error performing initial pins fetch: \(error)")
         }
-
         
         if let pins = fetchedResultsController.fetchedObjects as? [Pin] {
             mapView.addAnnotations(pins)
@@ -40,6 +46,8 @@ class MapViewController: UIViewController, MKMapViewDelegate {
         let lpgr = UILongPressGestureRecognizer(target: self, action: "handleLongPress:")
         mapView.addGestureRecognizer(lpgr)
     }
+    
+    // UILongPressGestureRecognizer
     
     func handleLongPress(sender: UILongPressGestureRecognizer) {
         
@@ -67,7 +75,6 @@ class MapViewController: UIViewController, MKMapViewDelegate {
                     pinInFocus = nil
                 }
         }
-        
     }
     
     // Helper: Core Data
@@ -88,6 +95,8 @@ class MapViewController: UIViewController, MKMapViewDelegate {
         return fetchedResultsController
     } ()
 
+    // Helper: Save region and zoom level.
+    
     func fetchMapRegion()  {
         let fetchRequest = NSFetchRequest(entityName: "MapRegion")
         do {
@@ -105,21 +114,6 @@ class MapViewController: UIViewController, MKMapViewDelegate {
         }
     }
     
-    // Helper: Save region and zoom level.
-    
-    // Here we use the same filePath strategy as the Persistent Master Detail
-    // A convenient property
-    var filePath : String {
-        let manager = NSFileManager.defaultManager()
-        let url = manager.URLsForDirectory(.DocumentDirectory, inDomains: .UserDomainMask).first! as NSURL
-        return url.URLByAppendingPathComponent("mapRegionArchive").path!
-    }
-    
-    func saveMapRegion() {
-        savedMapRegion.region = mapView.region
-        CoreDataStackManager.sharedInstance().saveContext()
-    }
-    
     func restoreMapRegion(animated: Bool) {
         fetchMapRegion()
         if let region = savedMapRegion?.region {
@@ -127,10 +121,9 @@ class MapViewController: UIViewController, MKMapViewDelegate {
         }
     }
     
-    override func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject?) {
-        if let vc = segue.destinationViewController as? PhotoAlbumViewController {
-            vc.pin = self.mapView.selectedAnnotations[0] as! Pin
-        }
+    func saveMapRegion() {
+        savedMapRegion.region = mapView.region
+        CoreDataStackManager.sharedInstance().saveContext()
     }
     
     // MKMapViewDelegate
