@@ -8,6 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		6C0E3F2D1C0202D50035EC92 /* UIPhotoCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6C0E3F2C1C0202D50035EC92 /* UIPhotoCell.swift */; };
+		6C0E3F2F1C0271890035EC92 /* MapRegion.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6C0E3F2E1C0271890035EC92 /* MapRegion.swift */; };
 		6C89F6EA1BFE05FD00AC2477 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6C89F6E91BFE05FD00AC2477 /* AppDelegate.swift */; };
 		6C89F6EC1BFE05FD00AC2477 /* MapViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6C89F6EB1BFE05FD00AC2477 /* MapViewController.swift */; };
 		6C89F6EF1BFE05FD00AC2477 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 6C89F6ED1BFE05FD00AC2477 /* Main.storyboard */; };
@@ -24,6 +25,7 @@
 
 /* Begin PBXFileReference section */
 		6C0E3F2C1C0202D50035EC92 /* UIPhotoCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UIPhotoCell.swift; sourceTree = "<group>"; };
+		6C0E3F2E1C0271890035EC92 /* MapRegion.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MapRegion.swift; sourceTree = "<group>"; };
 		6C89F6E61BFE05FD00AC2477 /* VirtualTourist.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = VirtualTourist.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		6C89F6E91BFE05FD00AC2477 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		6C89F6EB1BFE05FD00AC2477 /* MapViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MapViewController.swift; sourceTree = "<group>"; };
@@ -104,6 +106,7 @@
 		6C89F7041BFE1D3A00AC2477 /* Model */ = {
 			isa = PBXGroup;
 			children = (
+				6C0E3F2E1C0271890035EC92 /* MapRegion.swift */,
 				6C89F70F1C00E58C00AC2477 /* Photo.swift */,
 				6C89F7071BFE1E6000AC2477 /* Pin.swift */,
 			);
@@ -199,6 +202,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				6C0E3F2F1C0271890035EC92 /* MapRegion.swift in Sources */,
 				6C0E3F2D1C0202D50035EC92 /* UIPhotoCell.swift in Sources */,
 				6C89F7081BFE1E6000AC2477 /* Pin.swift in Sources */,
 				6C89F6EC1BFE05FD00AC2477 /* MapViewController.swift in Sources */,

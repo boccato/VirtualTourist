@@ -19,6 +19,7 @@ class MapViewController: UIViewController, MKMapViewDelegate {
     
     // Pin currently being created / dragged by the user.
     var pinInFocus: Pin!
+    var savedMapRegion: MapRegion!
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -38,19 +39,6 @@ class MapViewController: UIViewController, MKMapViewDelegate {
         
         let lpgr = UILongPressGestureRecognizer(target: self, action: "handleLongPress:")
         mapView.addGestureRecognizer(lpgr)
-    }
-    
-    func fetchAll() -> [Pin] {
-        // Create the fetch request
-        let fetchRequest = NSFetchRequest(entityName: "Pin")
-        
-        // Execute the Fetch Request
-        do {
-            return try sharedContext.executeFetchRequest(fetchRequest) as! [Pin]
-        } catch let error as NSError {
-            print("Error in fetchAll(): \(error)")
-            return [Pin]()
-        }
     }
     
     func handleLongPress(sender: UILongPressGestureRecognizer) {
@@ -100,6 +88,23 @@ class MapViewController: UIViewController, MKMapViewDelegate {
         return fetchedResultsController
     } ()
 
+    func fetchMapRegion()  {
+        let fetchRequest = NSFetchRequest(entityName: "MapRegion")
+        do {
+            let data = try sharedContext.executeFetchRequest(fetchRequest) as! [MapRegion]
+            if data.isEmpty {
+                savedMapRegion = MapRegion(region: mapView.region, context: sharedContext)
+                CoreDataStackManager.sharedInstance().saveContext()
+            }
+            else {
+                savedMapRegion = data[0]
+            }
+        } catch {
+            savedMapRegion = MapRegion(region: mapView.region, context: sharedContext)
+            CoreDataStackManager.sharedInstance().saveContext()
+        }
+    }
+    
     // Helper: Save region and zoom level.
     
     // Here we use the same filePath strategy as the Persistent Master Detail
@@ -110,40 +115,15 @@ class MapViewController: UIViewController, MKMapViewDelegate {
         return url.URLByAppendingPathComponent("mapRegionArchive").path!
     }
     
-    // FIX: Use Core Data instead.
     func saveMapRegion() {
-        
-        // Place the "center" and "span" of the map into a dictionary
-        // The "span" is the width and height of the map in degrees.
-        // It represents the zoom level of the map.
-        
-        let dictionary = [
-            "latitude" : mapView.region.center.latitude,
-            "longitude" : mapView.region.center.longitude,
-            "latitudeDelta" : mapView.region.span.latitudeDelta,
-            "longitudeDelta" : mapView.region.span.longitudeDelta
-        ]
-        
-        // Archive the dictionary into the filePath
-        NSKeyedArchiver.archiveRootObject(dictionary, toFile: filePath)
+        savedMapRegion.region = mapView.region
+        CoreDataStackManager.sharedInstance().saveContext()
     }
     
     func restoreMapRegion(animated: Bool) {
-        // if we can unarchive a dictionary, we will use it to set the map back to its
-        // previous center and span
-        if let regionDictionary = NSKeyedUnarchiver.unarchiveObjectWithFile(filePath) as? [String : AnyObject] {
-            
-            let longitude = regionDictionary["longitude"] as! CLLocationDegrees
-            let latitude = regionDictionary["latitude"] as! CLLocationDegrees
-            let center = CLLocationCoordinate2D(latitude: latitude, longitude: longitude)
-            
-            let longitudeDelta = regionDictionary["latitudeDelta"] as! CLLocationDegrees
-            let latitudeDelta = regionDictionary["longitudeDelta"] as! CLLocationDegrees
-            let span = MKCoordinateSpan(latitudeDelta: latitudeDelta, longitudeDelta: longitudeDelta)
-            
-            let savedRegion = MKCoordinateRegion(center: center, span: span)
-            
-            mapView.setRegion(savedRegion, animated: animated)
+        fetchMapRegion()
+        if let region = savedMapRegion?.region {
+            mapView.setRegion(region, animated: animated)
         }
     }
     

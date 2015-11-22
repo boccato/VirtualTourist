@@ -50,7 +50,13 @@
                             <constraint firstItem="ef8-Ki-NW0" firstAttribute="top" secondItem="8bC-Xf-vdC" secondAttribute="topMargin" constant="64" id="CIn-tX-ynS"/>
                             <constraint firstAttribute="trailingMargin" secondItem="ef8-Ki-NW0" secondAttribute="trailing" constant="-20" id="DvF-AJ-sXP"/>
                             <constraint firstItem="ef8-Ki-NW0" firstAttribute="leading" secondItem="8bC-Xf-vdC" secondAttribute="leadingMargin" constant="-20" id="goK-zm-lHw"/>
+                            <constraint firstItem="ef8-Ki-NW0" firstAttribute="top" secondItem="y3c-jy-aDJ" secondAttribute="bottom" id="r0O-ag-vJg"/>
                         </constraints>
+                        <variation key="default">
+                            <mask key="constraints">
+                                <exclude reference="CIn-tX-ynS"/>
+                            </mask>
+                        </variation>
                     </view>
                     <navigationItem key="navigationItem" title="Virtual Tourist" id="NMU-Yf-EX0">
                         <barButtonItem key="backBarButtonItem" title="OK" id="zmM-lK-Piy"/>
