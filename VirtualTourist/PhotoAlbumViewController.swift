@@ -96,8 +96,6 @@ class PhotoAlbumViewController: UIViewController, UICollectionViewDataSource, UI
     
     func collectionView(collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
         let sectionInfo = self.fetchedResultsController.sections![section]
-
-        print("number Of Cells: \(sectionInfo.numberOfObjects)")
         return sectionInfo.numberOfObjects
     }
     
@@ -130,8 +128,6 @@ class PhotoAlbumViewController: UIViewController, UICollectionViewDataSource, UI
         insertedIndexPaths = [NSIndexPath]()
         deletedIndexPaths = [NSIndexPath]()
         updatedIndexPaths = [NSIndexPath]()
-
-//        print("in controllerWillChangeContent")
     }
 
     // The second method may be called multiple times, once for each Color object that is added, deleted, or changed.
@@ -141,21 +137,18 @@ class PhotoAlbumViewController: UIViewController, UICollectionViewDataSource, UI
         switch type{
 
         case .Insert:
-//            print("Insert an item")
             // Here we are noting that a new Color instance has been added to Core Data. We remember its index path
             // so that we can add a cell in "controllerDidChangeContent". Note that the "newIndexPath" parameter has
             // the index path that we want in this case
             insertedIndexPaths.append(newIndexPath!)
             break
         case .Delete:
-//            print("Delete an item")
             // Here we are noting that a Color instance has been deleted from Core Data. We keep remember its index path
             // so that we can remove the corresponding cell in "controllerDidChangeContent". The "indexPath" parameter has
             // value that we want in this case.
             deletedIndexPaths.append(indexPath!)
             break
         case .Update:
-//            print("Update an item.")
             // We don't expect Color instances to change after they are created. But Core Data would
             // notify us of changes if any occured. This can be useful if you want to respond to changes
             // that come about after data is downloaded. For example, when an images is downloaded from
@@ -176,10 +169,7 @@ class PhotoAlbumViewController: UIViewController, UICollectionViewDataSource, UI
     // Notice that all of the changes are performed inside a closure that is handed to the collection view.
     func controllerDidChangeContent(controller: NSFetchedResultsController) {
 
-//        print("in controllerDidChangeContent. changes.count: \(insertedIndexPaths.count + deletedIndexPaths.count)")
-
         collectionView.performBatchUpdates({() -> Void in
-
             for indexPath in self.insertedIndexPaths {
                 self.collectionView.insertItemsAtIndexPaths([indexPath])
             }
