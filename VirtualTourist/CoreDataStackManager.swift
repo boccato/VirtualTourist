@@ -109,6 +109,12 @@ class CoreDataStackManager {
     
     // MARK: - Core Data Saving support
     
+    func rollbackContext () {
+        if managedObjectContext.hasChanges {
+            managedObjectContext.rollback()
+        }
+    }
+    
     func saveContext () {
         if managedObjectContext.hasChanges {
             do {

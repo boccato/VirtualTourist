@@ -9,23 +9,24 @@
 import CoreData
 import MapKit
 
-class Pin : NSManagedObject {
+class Pin : NSManagedObject, MKAnnotation {
     
     struct Keys {
         static let Latitude = "latitude"
         static let Longitude = "longitude"
     }
     
-    // 3. We are promoting these four from simple properties, to Core Data attributes
-    @NSManaged var latitude: NSNumber
-    @NSManaged var longitude: NSNumber
+    // Core Data attributes.
+    @NSManaged var album: [Photo]
+    @NSManaged var latitude: Double
+    @NSManaged var longitude: Double
     
     override init(entity: NSEntityDescription, insertIntoManagedObjectContext context: NSManagedObjectContext?) {
         super.init(entity: entity, insertIntoManagedObjectContext: context)
     }
     
-    // Insert the new Pin into a Core Data Managed Object Context and initialize
-    // its properties from a dictionary.
+    // Insert the new Pin into a Core Data Managed Object Context and
+    // initialize its properties from a dictionary.
     init(dictionary: [String : AnyObject], context: NSManagedObjectContext) {
         
         let entity =  NSEntityDescription.entityForName("Pin", inManagedObjectContext: context)!
@@ -34,13 +35,20 @@ class Pin : NSManagedObject {
         // into the context that was passed in as a parameter.
         super.init(entity: entity, insertIntoManagedObjectContext: context)
         
-        latitude = dictionary[Keys.Latitude] as! NSNumber
-        longitude = dictionary[Keys.Longitude] as! NSNumber
+        latitude = dictionary[Keys.Latitude] as! Double
+        longitude = dictionary[Keys.Longitude] as! Double
     }
     
     // MKAnnotation
     
-    func coordinate() -> CLLocationCoordinate2D {
-        return CLLocationCoordinate2D(latitude: latitude.doubleValue, longitude: longitude.doubleValue)
+    var coordinate: CLLocationCoordinate2D {
+        return CLLocationCoordinate2D(latitude: latitude, longitude: longitude)
+    }
+    
+    func setCoordinate(coordinate: CLLocationCoordinate2D) {
+        willChangeValueForKey("coordinate")
+        latitude = coordinate.latitude
+        longitude = coordinate.longitude
+        didChangeValueForKey("coordinate")
     }
 }

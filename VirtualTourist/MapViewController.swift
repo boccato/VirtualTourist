@@ -5,7 +5,6 @@
 //  Created by Ricardo Boccato Alves on 11/19/15.
 //  Copyright © 2015 Ricardo Boccato Alves. All rights reserved.
 //
-//  This file was adapted from the MemoryMap app (ViewController.swift).
 
 import CoreData
 import MapKit
@@ -15,10 +14,11 @@ import UIKit
 // users can drag the pin until their finger is lifted.
 class MapViewController: UIViewController, MKMapViewDelegate {
     
+    @IBOutlet weak var btnEdit: UIBarButtonItem!
     @IBOutlet weak var mapView: MKMapView!
     
     // Pin currently being created / dragged by the user.
-    var pinInFocus: MKPointAnnotation!
+    var pinInFocus: Pin!
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -27,15 +27,13 @@ class MapViewController: UIViewController, MKMapViewDelegate {
         
         do {
             try fetchedResultsController.performFetch()
-        } catch {}
+        } catch let error as NSError {
+            self.showAlert("", message: "Error performing initial pins fetch: \(error)")
+        }
+
         
         if let pins = fetchedResultsController.fetchedObjects as? [Pin] {
-//        let pins = fetchAll()
-            for pin in pins {
-                let annotation = MKPointAnnotation()
-                annotation.coordinate = pin.coordinate()
-                mapView.addAnnotation(annotation)
-            }
+            mapView.addAnnotations(pins)
         }
         
         let lpgr = UILongPressGestureRecognizer(target: self, action: "handleLongPress:")
@@ -62,23 +60,22 @@ class MapViewController: UIViewController, MKMapViewDelegate {
         
         switch(sender.state) {
             case .Began:
-                pinInFocus = MKPointAnnotation()
-                pinInFocus.coordinate = positionOnMap
-                mapView.addAnnotation(pinInFocus)
-            case .Changed:
-                pinInFocus.coordinate = positionOnMap
-            case .Ended:
-                // Creates a pin object and persists it using CoreData.
                 let pin = [
                     Pin.Keys.Latitude: positionOnMap.latitude,
                     Pin.Keys.Longitude: positionOnMap.longitude
                 ]
-                let _ = Pin(dictionary: pin, context: sharedContext)
+                pinInFocus = Pin(dictionary: pin, context: sharedContext)
+                mapView.addAnnotation(pinInFocus)
+            case .Changed:
+                pinInFocus.setCoordinate(positionOnMap)
+            case .Ended:
                 CoreDataStackManager.sharedInstance().saveContext()
+                // Pre-fetch photos for the new pin.
                 pinInFocus = nil
             default:
                 if pinInFocus != nil {
                     mapView.removeAnnotation(pinInFocus)
+                    CoreDataStackManager.sharedInstance().rollbackContext()
                     pinInFocus = nil
                 }
         }
@@ -132,7 +129,6 @@ class MapViewController: UIViewController, MKMapViewDelegate {
     }
     
     func restoreMapRegion(animated: Bool) {
-        
         // if we can unarchive a dictionary, we will use it to set the map back to its
         // previous center and span
         if let regionDictionary = NSKeyedUnarchiver.unarchiveObjectWithFile(filePath) as? [String : AnyObject] {
@@ -151,40 +147,18 @@ class MapViewController: UIViewController, MKMapViewDelegate {
         }
     }
     
+    override func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject?) {
+        if let vc = segue.destinationViewController as? PhotoAlbumViewController {
+            vc.pin = self.mapView.selectedAnnotations[0] as! Pin
+        }
+    }
+    
     // MKMapViewDelegate
     
-    // This delegate method is implemented to respond to taps. It opens the system browser
-    // to the URL specified in the annotationViews subtitle property.
-//    func mapView(mapView: MKMapView, annotationView view: MKAnnotationView, calloutAccessoryControlTapped control: UIControl) {
-//        if control == view.rightCalloutAccessoryView {
-//            let app = UIApplication.sharedApplication()
-//            if let toOpen = view.annotation?.subtitle! {
-//                app.openURL(NSURL(string: toOpen)!)
-//            }
-//        }
-//    }
-    
-    // Here we create a view with a "right callout accessory view". You might choose to look into other
-    // decoration alternatives. Notice the similarity between this method and the cellForRowAtIndexPath
-    // method in TableViewDataSource.
-//    func mapView(mapView: MKMapView, viewForAnnotation annotation: MKAnnotation) -> MKAnnotationView? {
-//        
-//        let reuseId = "pin"
-//        
-//        var pinView = mapView.dequeueReusableAnnotationViewWithIdentifier(reuseId) as? MKPinAnnotationView
-//        
-//        if pinView == nil {
-//            pinView = MKPinAnnotationView(annotation: annotation, reuseIdentifier: reuseId)
-//            pinView!.canShowCallout = true
-//            pinView!.pinTintColor = UIColor.redColor()
-//            pinView!.rightCalloutAccessoryView = UIButton(type: .DetailDisclosure)
-//        }
-//        else {
-//            pinView!.annotation = annotation
-//        }
-//        
-//        return pinView
-//    }
+    func mapView(mapView: MKMapView, didSelectAnnotationView view: MKAnnotationView) {
+        performSegueWithIdentifier("photoAlbum", sender: self)
+        mapView.deselectAnnotation(view.annotation, animated: false)
+    }
 
     func mapView(mapView: MKMapView, regionDidChangeAnimated animated: Bool) {
         saveMapRegion()
