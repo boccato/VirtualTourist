@@ -56,14 +56,18 @@ class Photo : NSManagedObject {
         else {
             dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_BACKGROUND, 0)) {
                 dispatch_group_wait(self.group, DISPATCH_TIME_FOREVER)
-            
                 if self.image == nil {
                     self.image = self.loadImage(self.path)
-                }
-                
+                }                
                 completionHandler(image: self.image)
             }
         }
+    }
+    
+    private func createPathWithId() -> String {
+        let manager = NSFileManager.defaultManager()
+        let url = manager.URLsForDirectory(.DocumentDirectory, inDomains: .UserDomainMask).first! as NSURL
+        return url.URLByAppendingPathComponent(id).path!
     }
     
     private func downloadImage() {
@@ -80,6 +84,20 @@ class Photo : NSManagedObject {
                     self.image = UIImage(named: "not-found")
                 }
                 self.path = self.saveImage(self.image)
+                
+                // All "saves" must be on the same thread.
+                dispatch_async(dispatch_get_main_queue()) {
+                    CoreDataStackManager.sharedInstance().saveContext()
+                }
+            }
+        }
+        else {
+            // Recreates the path based on the Id since the Simulator changes
+            // the path of the Documents folder at each run.
+            // This is probably not needed on a real device.
+            let newPath = createPathWithId()
+            if path != newPath {
+                path = newPath
             }
         }
     }
@@ -93,10 +111,8 @@ class Photo : NSManagedObject {
     
     private func saveImage(image: UIImage?) -> String? {
         if let image = image {
-            if let data = UIImageJPEGRepresentation(image, 1) {
-                let manager = NSFileManager.defaultManager()
-                let url = manager.URLsForDirectory(.DocumentDirectory, inDomains: .UserDomainMask).first! as NSURL
-                let path = url.URLByAppendingPathComponent(id).path!
+            if let data = UIImageJPEGRepresentation(image, 1.0) {
+                let path = createPathWithId()
                 data.writeToFile(path, atomically: true)
                 return path
             }
