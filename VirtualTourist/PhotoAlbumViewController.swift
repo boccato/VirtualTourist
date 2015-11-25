@@ -63,24 +63,14 @@ class PhotoAlbumViewController: UIViewController, UICollectionViewDataSource, UI
             } catch let error as NSError {
                 self.showAlert("", message: "Error performing initial photos fetch: \(error)")
             }
-            // FIX: pre-fetch when the pin is created
-            if pin.album.isEmpty {
-                btnNewCollection.enabled = false
-                FlickrClient.sharedInstance().searchPhotosBy(pin.latitude, longitude: pin.longitude) { (album, error) in
-                    guard error == "" else {
-                        dispatch_async(dispatch_get_main_queue(), {
-                            self.showAlert("Error loading images from Flickr.", message: error)
-                        })
-                        return
+            
+            pin.withLoadedAlbum() {(album) in
+                dispatch_async(dispatch_get_main_queue(), {
+                    if album == nil {
+                        self.showAlert("Error", message: "Could not load images from Flickr.")
                     }
-                    for photo in album {
-                        let photo = Photo(dictionary: photo, context: self.sharedContext)
-                        photo.pin = self.pin
-                    }
-                    dispatch_async(dispatch_get_main_queue(), {
-                        self.btnNewCollection.enabled = true
-                    })
-                }
+                    self.btnNewCollection.enabled = true
+                })
             }
         }
     }

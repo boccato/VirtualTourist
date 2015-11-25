@@ -40,6 +40,22 @@ class Pin : NSManagedObject, MKAnnotation {
         longitude = dictionary[Keys.Longitude] as! Double
     }
     
+    func withLoadedAlbum(completionHandler: (album: [Photo]?) -> Void) {
+        if album.isEmpty {
+            FlickrClient.sharedInstance().searchPhotosBy(latitude, longitude: longitude) { (album, error) in
+                guard error == "" else {
+                    completionHandler(album: nil)
+                    return
+                }
+                for photo in album {
+                    let photo = Photo(dictionary: photo, context: self.managedObjectContext!)
+                    photo.pin = self
+                }
+            }
+        }
+        completionHandler(album: album)
+    }
+    
     // MKAnnotation
     
     var coordinate: CLLocationCoordinate2D {

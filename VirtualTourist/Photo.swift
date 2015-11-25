@@ -25,7 +25,6 @@ class Photo : NSManagedObject {
     private lazy var group: dispatch_group_t = { return dispatch_group_create() }()
     private var image: UIImage?
     
-    
     // Swift doesn't automatically inherits init methods, we must be explicit.
     override init(entity: NSEntityDescription, insertIntoManagedObjectContext context: NSManagedObjectContext?) {
         super.init(entity: entity, insertIntoManagedObjectContext: context)
@@ -58,7 +57,7 @@ class Photo : NSManagedObject {
                 dispatch_group_wait(self.group, DISPATCH_TIME_FOREVER)
                 if self.image == nil {
                     self.image = self.loadImage(self.path)
-                }                
+                }
                 completionHandler(image: self.image)
             }
         }

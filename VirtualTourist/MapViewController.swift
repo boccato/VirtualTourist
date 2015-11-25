@@ -67,6 +67,13 @@ class MapViewController: UIViewController, MKMapViewDelegate {
             case .Ended:
                 CoreDataStackManager.sharedInstance().saveContext()
                 // Pre-fetch photos for the new pin.
+                pinInFocus.withLoadedAlbum() {(album) in
+                    dispatch_async(dispatch_get_main_queue(), {
+                        if album == nil {
+                            self.showAlert("Error", message: "Could not load images from Flickr.")
+                        }
+                    })
+                }
                 pinInFocus = nil
             default:
                 if pinInFocus != nil {
