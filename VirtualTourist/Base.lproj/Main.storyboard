@@ -91,6 +91,9 @@
                                     <constraint firstAttribute="height" constant="30" id="wXz-EZ-dAA"/>
                                 </constraints>
                                 <state key="normal" title="New Collection"/>
+                                <connections>
+                                    <action selector="pressedButton:" destination="eFa-O9-kZm" eventType="touchUpInside" id="UIi-Md-h4i"/>
+                                </connections>
                             </button>
                             <label hidden="YES" opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="No Images" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="uNH-b3-frw">
                                 <rect key="frame" x="259" y="289" width="82" height="20.5"/>

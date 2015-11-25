@@ -63,15 +63,74 @@ class PhotoAlbumViewController: UIViewController, UICollectionViewDataSource, UI
             } catch let error as NSError {
                 self.showAlert("", message: "Error performing initial photos fetch: \(error)")
             }
-            
-            pin.withLoadedAlbum() {(album) in
-                dispatch_async(dispatch_get_main_queue(), {
+            loadImages()
+        }
+    }
+    
+    // Actions
+    
+    @IBAction func pressedButton(sender: UIButton) {
+        // New Collection
+        if selectedIndexes.isEmpty {
+            if let objects = fetchedResultsController.fetchedObjects {
+                for obj in objects {
+                    selectedIndexes.append(fetchedResultsController.indexPathForObject(obj)!)
+                }
+            }
+            deleteSelected()
+            loadImages()
+        }
+        // Remove Selected Photos
+        else {
+            deleteSelected()
+        }
+    }
+    
+    // Helpers
+    
+    func configureCell(cell: UIPhotoCell, atIndexPath indexPath: NSIndexPath) {
+        // If the cell is "selected" it's color panel is grayed out
+        // we use the Swift `find` function to see if the indexPath is in the array
+        
+        if selectedIndexes.indexOf(indexPath) == nil {
+            cell.backgroundView?.alpha = 1.0
+        } else {
+            cell.backgroundView?.alpha = 0.05
+        }
+    }
+    
+    func deleteSelected() {
+        var photosToDelete = [Photo]()
+        for indexPath in selectedIndexes {
+            photosToDelete.append(fetchedResultsController.objectAtIndexPath(indexPath) as! Photo)
+        }
+        for photo in photosToDelete {
+            sharedContext.deleteObject(photo)
+        }
+        selectedIndexes = [NSIndexPath]()
+        updateBottomButton()
+        CoreDataStackManager.sharedInstance().saveContext()
+    }
+    
+    func loadImages() {
+        dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_BACKGROUND, 0)) {
+            self.pin.withLoadedAlbum() {(album) in
+                dispatch_async(dispatch_get_main_queue()) {
                     if album == nil {
                         self.showAlert("Error", message: "Could not load images from Flickr.")
                     }
                     self.btnNewCollection.enabled = true
-                })
+                }
             }
+        }
+
+    }
+    
+    func updateBottomButton() {
+        if selectedIndexes.count > 0 {
+            btnNewCollection!.setTitle("Remove Selected Photos", forState: .Normal)
+        } else {
+            btnNewCollection!.setTitle("New Collection", forState: .Normal)
         }
     }
     
@@ -81,12 +140,31 @@ class PhotoAlbumViewController: UIViewController, UICollectionViewDataSource, UI
         let cell = collectionView.dequeueReusableCellWithReuseIdentifier("PhotoCell", forIndexPath: indexPath)
         let photo = fetchedResultsController.objectAtIndexPath(indexPath) as! Photo
         (cell as! UIPhotoCell).photo = photo
+        configureCell(cell as! UIPhotoCell, atIndexPath: indexPath)
         return cell
     }
     
     func collectionView(collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
         let sectionInfo = self.fetchedResultsController.sections![section]
         return sectionInfo.numberOfObjects
+    }
+    
+    func collectionView(collectionView: UICollectionView, didSelectItemAtIndexPath indexPath: NSIndexPath) {
+
+        let cell = collectionView.cellForItemAtIndexPath(indexPath) as! UIPhotoCell
+
+        // Whenever a cell is tapped we will toggle its presence in the selectedIndexes array
+        if let index = selectedIndexes.indexOf(indexPath) {
+            selectedIndexes.removeAtIndex(index)
+        } else {
+            selectedIndexes.append(indexPath)
+        }
+
+        // Then reconfigure the cell
+        configureCell(cell, atIndexPath: indexPath)
+
+        // And update the buttom button
+        updateBottomButton()
     }
     
     func numberOfSectionsInCollectionView(collectionView: UICollectionView) -> Int {
@@ -174,22 +252,4 @@ class PhotoAlbumViewController: UIViewController, UICollectionViewDataSource, UI
             
             }, completion: nil)
     }
-    
-//    func collectionView(collectionView: UICollectionView, didSelectItemAtIndexPath indexPath: NSIndexPath) {
-//        
-//        let cell = collectionView.cellForItemAtIndexPath(indexPath) as! ColorCell
-//        
-//        // Whenever a cell is tapped we will toggle its presence in the selectedIndexes array
-//        if let index = selectedIndexes.indexOf(indexPath) {
-//            selectedIndexes.removeAtIndex(index)
-//        } else {
-//            selectedIndexes.append(indexPath)
-//        }
-//        
-//        // Then reconfigure the cell
-//        configureCell(cell, atIndexPath: indexPath)
-//        
-//        // And update the buttom button
-//        updateBottomButton()
-//    }
 }

@@ -48,6 +48,12 @@ class Photo : NSManagedObject {
         downloadImage()
     }
     
+    override func didSave() {
+        if deleted {
+            deleteImage()
+        }
+    }
+    
     func withLoadedImage(completionHandler: (image: UIImage?) -> Void) {
         if let image = image {
             completionHandler(image: image)
@@ -67,6 +73,18 @@ class Photo : NSManagedObject {
         let manager = NSFileManager.defaultManager()
         let url = manager.URLsForDirectory(.DocumentDirectory, inDomains: .UserDomainMask).first! as NSURL
         return url.URLByAppendingPathComponent(id).path!
+    }
+    
+    private func deleteImage() {
+        let path = createPathWithId()
+        let mgr = NSFileManager.defaultManager()
+        if mgr.fileExistsAtPath(path) {
+            do {
+                try mgr.removeItemAtPath(path)
+            } catch {
+                print("Error deleting file '\(path)'.")
+            }
+        }
     }
     
     private func downloadImage() {

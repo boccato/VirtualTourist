@@ -20,6 +20,7 @@ class UIPhotoCell : UICollectionViewCell {
         set(photo) {
             _photo = photo
             backgroundView = UIImageView(image: UIImage(named: "loading"))
+            activityIndicator.hidden = false
             activityIndicator.startAnimating()
             _photo.withLoadedImage({(image) in
                 dispatch_async(dispatch_get_main_queue()) {
